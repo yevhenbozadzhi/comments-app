@@ -5,8 +5,31 @@ import { deleteComment } from "../services/deleteComment.js";
 import { getCaptcha, verifyCaptcha } from "../services/getCaptcha.js";
 import { uploadFile } from "../services/uploadService.js";
 import { sanitizeHtmlService } from "../services/SanitizeService.js";
+import { ZodError } from "zod";
 import { createCommentSchema } from "../validation/validation.js";
 import { getIO } from "../socket.js";
+
+function formatValidationError(error) {
+  if (!(error instanceof ZodError)) {
+    return error.message;
+  }
+
+  return error.issues
+    .map((issue) => {
+      const field = issue.path.join(".") || "field";
+      if (field === "email") {
+        return "Invalid email format (example: user@mail.com)";
+      }
+      if (field === "username") {
+        return "Username must contain only letters and numbers";
+      }
+      if (field === "homepage") {
+        return "Homepage must be a valid URL or empty";
+      }
+      return `${field}: ${issue.message}`;
+    })
+    .join("; ");
+}
 import { previewCommentService } from "../services/previewComment.js";
 export const getCommentsController = async (req, res) => {
   try {
@@ -35,10 +58,10 @@ export const createCommentController = async (req, res) => {
     const body = createCommentSchema.parse({
       username: req.body.username,
       email: req.body.email,
-      homepage: req.body.homepage ?? null,
-      client_meta: req.body.client_meta ?? null,
+      homepage: req.body.homepage || "",
+      client_meta: req.body.client_meta || "",
       text: sanitizeHtmlService(req.body.text),
-      parentId: req.body.parentId ?? null,
+      parentId: req.body.parentId || undefined,
       captchaSessionId: req.body.captchaSessionId,
       captcha: req.body.captcha,
     });
@@ -50,6 +73,9 @@ export const createCommentController = async (req, res) => {
     getIO().emit("newComment", result);
     res.status(200).json(result);
   } catch (error) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({ message: formatValidationError(error) });
+    }
     res.status(500).json({ message: error.message });
   }
 };

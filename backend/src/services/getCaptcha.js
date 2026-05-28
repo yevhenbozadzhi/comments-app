@@ -11,9 +11,12 @@ export const getCaptcha = () => {
   });
   const sessionId = crypto.randomUUID();
   captchaStore.set(sessionId, captcha.text.toLowerCase());
-  setTimeout(() => {
-    captchaStore.delete(sessionId);
-  }, 60000);
+  setTimeout(
+    () => {
+      captchaStore.delete(sessionId);
+    },
+    5 * 60 * 1000,
+  );
   return {
     sessionId,
     captcha: captcha.data,
