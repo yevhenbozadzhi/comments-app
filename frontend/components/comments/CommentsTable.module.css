@@ -1,0 +1,51 @@
+.wrap {
+  width: 100%;
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table th,
+.table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: top;
+}
+
+.table thead th {
+  text-align: center;
+}
+
+.table th button {
+  width: 100%;
+  border: none;
+  background: none;
+  color: #2563eb;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.table th button:hover {
+  text-decoration: underline;
+}
+
+.table tbody td {
+  text-align: center;
+}
+
+.textCell {
+  max-width: 360px;
+  color: #374151;
+  text-align: left;
+}

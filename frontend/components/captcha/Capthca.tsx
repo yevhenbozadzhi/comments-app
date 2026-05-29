@@ -24,10 +24,12 @@ export function Captcha({
       {captchaSrc ? <img src={captchaSrc} alt="Captcha" /> : null}
       <Input
         type="text"
+        placeholder="Enter captcha"
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        required
       />
-      <Button onClick={onRefresh}>
+      <Button type="button" onClick={onRefresh}>
         <RefreshCcw />
       </Button>
     </div>

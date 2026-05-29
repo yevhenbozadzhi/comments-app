@@ -3,6 +3,8 @@ import { registerService } from "../../services/auth/auth.js";
 import { verifyCaptcha } from "../../services/getCaptcha.js";
 import { loginUserSchema } from "../../validation/auth/auth.js";
 import { loginService } from "../../services/auth/auth.js";
+import prisma from "../../prisma.js";
+
 export const registerController = async (req, res) => {
   const validatedBody = registerUserSchema.parse(req.body);
   const ok = await verifyCaptcha(
@@ -35,4 +37,22 @@ export const loginController = async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
+};
+
+export const meCommentController = async (req, res) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: req.user.userId,
+    },
+    select: {
+      id: true,
+      username: true,
+      email: true,
+      homepage: true,
+    },
+  });
+  if (!user) {
+    return res.status(401).json({ message: "User not found" });
+  }
+  res.status(200).json(user);
 };

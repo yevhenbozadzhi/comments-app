@@ -10,6 +10,7 @@ export const createCommentSchema = z.object({
   captchaSessionId: z.string(),
   captcha: z.string().min(1),
 });
+
 export const createUserSchema = z.object({
   username: z
     .string()
@@ -19,4 +20,12 @@ export const createUserSchema = z.object({
   email: z.string().email(),
   homepage: z.string().url().optional(),
   client_meta: z.string().optional(),
+});
+
+export const commentLoginSchema = z.object({
+  text: z.string().min(1).max(1000),
+  parentId: z.string().uuid().optional(),
+  client_meta: z.string().optional(),
+  captchaSessionId: z.string(),
+  captcha: z.string().min(1),
 });

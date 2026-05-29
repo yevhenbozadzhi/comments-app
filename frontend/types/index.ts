@@ -69,3 +69,32 @@ export type CommentFormTypes = {
   client_meta?: string;
   parentId?: string;
 };
+
+export type RegisterUser = {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
+
+export type LoginUser = {
+  email: string;
+  password: string;
+  ok?: boolean;
+};
+
+export type AuthUser = {
+  id: string;
+  username: string;
+  email: string;
+  homepage: string;
+};
+
+export type CommentAuth = {
+  text: string;
+  captcha: string;
+  captchaSessionId: string;
+  homepage?: string;
+  parentId?: string;
+  client_meta?: string;
+};

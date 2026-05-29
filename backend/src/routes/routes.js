@@ -6,10 +6,15 @@ import { deleteCommentController } from "../controllers/controllers.js";
 import { getCaptchaController } from "../controllers/controllers.js";
 import { uploadMiddleware } from "../middleware/upload.js";
 import { uploadFileController } from "../controllers/controllers.js";
-import { registerController } from "../controllers/auth/auth.js";
+import {
+  registerController,
+  meCommentController,
+} from "../controllers/auth/auth.js";
 import { loginController } from "../controllers/auth/auth.js";
 import { createReplyController } from "../controllers/controllers.js";
 import { previewCommentController } from "../controllers/controllers.js";
+import { loginMiddleware } from "../middleware/auth/login.js";
+import { authMiddleware } from "../middleware/auth/auth.js";
 const router = express.Router();
 
 router.get("/health", (req, res) => {
@@ -18,10 +23,11 @@ router.get("/health", (req, res) => {
 
 router.post("/register", registerController);
 router.post("/login", loginController);
+router.get("/me", authMiddleware, meCommentController);
 
 router.get("/comments", getCommentsController);
 router.get("/comments/:id/replies", getRepliesController);
-router.post("/comments", createCommentController);
+router.post("/comments", loginMiddleware, createCommentController);
 router.get("/captcha", getCaptchaController);
 router.delete("/comments/:id", deleteCommentController);
 router.post(
@@ -29,6 +35,6 @@ router.post(
   uploadMiddleware,
   uploadFileController,
 );
-router.post("/comments/:id/reply", createReplyController);
+router.post("/comments/:id/reply", loginMiddleware, createReplyController);
 router.post("/comments/preview", previewCommentController);
 export default router;

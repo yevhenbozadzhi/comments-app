@@ -1,0 +1,62 @@
+.commentForm,
+.replyForm {
+  display: grid;
+  gap: 10px;
+}
+
+.userRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.commentForm input,
+.replyForm input,
+.commentForm textarea,
+.replyForm textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.replyText {
+  min-height: 72px;
+}
+
+.authHint {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.fieldError {
+  margin: -4px 0 4px;
+  font-size: 12px;
+  color: #b91c1c;
+}
+
+.replyBox {
+  margin-left: 12px;
+  padding: 10px 12px 10px 14px;
+  border-left: 2px solid #e5e7eb;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.replyHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.cancelBtn {
+  border: none;
+  background: none;
+  color: #2563eb;
+  font-size: 12px;
+  cursor: pointer;
+}

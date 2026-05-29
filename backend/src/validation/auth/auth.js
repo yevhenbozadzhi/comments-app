@@ -15,6 +15,8 @@ export const registerUserSchema = z
     confirmPassword: z.string().min(8).max(50),
     captcha: z.string().min(1).max(100, "Captcha is required"),
     captchaSessionId: z.string(),
+    client_meta: z.string().optional(),
+    homepage: z.string().url().optional().or(z.literal("")),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",

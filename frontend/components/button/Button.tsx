@@ -5,6 +5,7 @@ type ButtonProps = {
   type?: "button" | "submit" | "reset";
   loading?: boolean;
   icon?: React.ReactNode;
+  className?: string;
 };
 
 export const Button = ({
@@ -14,9 +15,16 @@ export const Button = ({
   type,
   loading,
   icon,
+  className,
 }: ButtonProps) => {
   return (
-    <button onClick={onClick} disabled={disabled} type={type}>
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      type={type}
+      className={className}
+    >
+      {icon}
       {children}
     </button>
   );

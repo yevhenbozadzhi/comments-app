@@ -5,32 +5,14 @@ import { deleteComment } from "../services/deleteComment.js";
 import { getCaptcha, verifyCaptcha } from "../services/getCaptcha.js";
 import { uploadFile } from "../services/uploadService.js";
 import { sanitizeHtmlService } from "../services/SanitizeService.js";
-import { ZodError } from "zod";
-import { createCommentSchema } from "../validation/validation.js";
+import {
+  createCommentSchema,
+  commentLoginSchema,
+} from "../validation/validation.js";
+import prisma from "../prisma.js";
 import { getIO } from "../socket.js";
-
-function formatValidationError(error) {
-  if (!(error instanceof ZodError)) {
-    return error.message;
-  }
-
-  return error.issues
-    .map((issue) => {
-      const field = issue.path.join(".") || "field";
-      if (field === "email") {
-        return "Invalid email format (example: user@mail.com)";
-      }
-      if (field === "username") {
-        return "Username must contain only letters and numbers";
-      }
-      if (field === "homepage") {
-        return "Homepage must be a valid URL or empty";
-      }
-      return `${field}: ${issue.message}`;
-    })
-    .join("; ");
-}
 import { previewCommentService } from "../services/previewComment.js";
+import { hasDisallowedHtml } from "../utils/checkHtml.js";
 export const getCommentsController = async (req, res) => {
   try {
     const page = Number(req.query.page) || 1;
@@ -55,16 +37,50 @@ export const getRepliesController = async (req, res) => {
 
 export const createCommentController = async (req, res) => {
   try {
-    const body = createCommentSchema.parse({
-      username: req.body.username,
-      email: req.body.email,
-      homepage: req.body.homepage || "",
-      client_meta: req.body.client_meta || "",
-      text: sanitizeHtmlService(req.body.text),
-      parentId: req.body.parentId || undefined,
-      captchaSessionId: req.body.captchaSessionId,
-      captcha: req.body.captcha,
-    });
+    if (hasDisallowedHtml(req.body.text || "")) {
+      return res.status(400).json({ message: "Text contains disallowed HTML tags" });
+    }
+    let body;
+    if (req.user?.userId) {
+      const user = await prisma.user.findUnique({
+        where: {
+          id: req.user.userId,
+        },
+        select: {
+          id: true,
+          username: true,
+          email: true,
+          homepage: true,
+        },
+      });
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+      const parseData = commentLoginSchema.parse({
+        text: sanitizeHtmlService(req.body.text),
+        parentId: req.body.parentId || undefined,
+        client_meta: req.body.client_meta || "",
+        captchaSessionId: req.body.captchaSessionId,
+        captcha: req.body.captcha,
+      });
+      body = {
+        ...parseData,
+        username: user.username,
+        email: user.email,
+      };
+    } else {
+      body = createCommentSchema.parse({
+        username: req.body.username,
+        email: req.body.email,
+        homepage: req.body.homepage || "",
+        client_meta: req.body.client_meta || "",
+        text: sanitizeHtmlService(req.body.text),
+        parentId: req.body.parentId || undefined,
+        captchaSessionId: req.body.captchaSessionId,
+        captcha: req.body.captcha,
+      });
+    }
+
     const captcha = verifyCaptcha(req.body.captchaSessionId, req.body.captcha);
     if (!captcha) {
       return res.status(400).json({ message: "Invalid captcha" });
@@ -73,9 +89,6 @@ export const createCommentController = async (req, res) => {
     getIO().emit("newComment", result);
     res.status(200).json(result);
   } catch (error) {
-    if (error instanceof ZodError) {
-      return res.status(400).json({ message: formatValidationError(error) });
-    }
     res.status(500).json({ message: error.message });
   }
 };
@@ -121,6 +134,9 @@ export const createReplyController = async (req, res) => {
 
 export const previewCommentController = async (req, res) => {
   try {
+    if (hasDisallowedHtml(req.body.text || "")) {
+      return res.status(400).json({ message: "Text contains disallowed HTML tags" });
+    }
     const result = await previewCommentService(
       req.body.text,
       req.body.username,

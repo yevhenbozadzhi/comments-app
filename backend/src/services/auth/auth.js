@@ -26,8 +26,8 @@ export const registerService = async (payload) => {
       email: payload.email,
       password: hashedPass,
       username: payload.username,
-      homepage: payload.homepage,
-      client_meta: payload.client_meta,
+      homepage: payload.homepage ?? null,
+      client_meta: payload.client_meta ?? "",
     },
     select: {
       id: true,
@@ -74,6 +74,7 @@ export const loginService = async (payload) => {
       id: user.id,
       username: user.username,
       email: user.email,
+      homepage: user.homepage ?? "",
     },
     accessToken,
     refreshToken,

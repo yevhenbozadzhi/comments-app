@@ -4,6 +4,7 @@ type InputProps = {
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
+  required?: boolean;
 };
 
 export const Input = ({
@@ -12,6 +13,7 @@ export const Input = ({
   value,
   onChange,
   disabled,
+  required,
 }: InputProps) => {
   return (
     <div>
@@ -21,6 +23,7 @@ export const Input = ({
         value={value}
         onChange={onChange}
         disabled={disabled}
+        required={required}
       />
     </div>
   );

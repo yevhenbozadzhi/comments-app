@@ -13,6 +13,7 @@ export const getReplies = async (parentId) => {
             homepage: true,
           },
         },
+        attachment: true,
       },
       orderBy: {
         createdAt: "asc",

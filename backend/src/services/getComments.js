@@ -19,6 +19,7 @@ export const getComments = async (
             homepage: true,
           },
         },
+        attachment: true,
       },
       orderBy: buildOrderBy(sortBy, sortOrder),
       skip: (pageNum - 1) * 25,

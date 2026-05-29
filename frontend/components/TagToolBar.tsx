@@ -1,20 +1,27 @@
-import { Bold, Italic, Strikethrough, Underline } from "lucide-react";
 import { Button } from "./button/Button";
+import styles from "./TagToolBar.module.css";
 
-export function TagToolBar() {
+type TagToolBarProps = {
+  onInsert: (openTag: string, closeTag: string) => void;
+};
+
+export function TagToolBar({ onInsert }: TagToolBarProps) {
   return (
-    <div>
-      <Button>
-        <Bold />
+    <div className={styles.toolbar}>
+      <Button type="button" onClick={() => onInsert("<i>", "</i>")}>
+        i
       </Button>
-      <Button>
-        <Italic />
+      <Button type="button" onClick={() => onInsert("<strong>", "</strong>")}>
+        strong
       </Button>
-      <Button>
-        <Underline />
+      <Button type="button" onClick={() => onInsert("<code>", "</code>")}>
+        code
       </Button>
-      <Button>
-        <Strikethrough />
+      <Button
+        type="button"
+        onClick={() => onInsert('<a href="https://">', "</a>")}
+      >
+        a
       </Button>
     </div>
   );

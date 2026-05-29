@@ -1,0 +1,31 @@
+.replyBox {
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 2px solid #e5e7eb;
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.replyHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.cancelBtn {
+  border: none;
+  background: none;
+  color: #2563eb;
+  font-size: 12px;
+  cursor: pointer;
+}
+.replyForm textarea {
+  min-height: 72px;
+}
+.replyForm input {
+  padding: 6px 10px;
+  font-size: 13px;
+}

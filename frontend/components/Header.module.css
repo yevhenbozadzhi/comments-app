@@ -1,0 +1,65 @@
+.header {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.topRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.authNav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.authNav a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.userLabel {
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.newPostBtn {
+  align-self: flex-start;
+  background: #fff !important;
+  color: #2563eb !important;
+  border: 1px solid #bfdbfe !important;
+  border-radius: 999px !important;
+  padding: 8px 16px !important;
+  font-weight: 600;
+}
+
+.newPostBtn:hover {
+  background: #eff6ff !important;
+}
+
+.formCard {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.formCard form {
+  display: grid;
+  gap: 10px;
+}
+
+@media (min-width: 1024px) {
+  .formCard {
+    padding: 20px;
+  }
+}

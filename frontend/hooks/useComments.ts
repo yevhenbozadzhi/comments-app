@@ -4,7 +4,9 @@ import { Comment, CreateComment, Pagination } from "@/types";
 import {
   createComment,
   createReply,
+  deleteComment,
   getComments,
+  getReplies,
   uploadAttachment,
 } from "@/lib/api";
 import { useSocket } from "./useSocket";
@@ -20,10 +22,22 @@ export function useComments() {
   const [page, setPage] = useState<number>(1);
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<string>("desc");
-  const [replies, setReplies] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [repliesByParent, setRepliesByParent] = useState<
+    Record<string, Comment[]>
+  >({});
 
+  const fetchReplies = async (parentId: string) => {
+    try {
+      const res = await getReplies(parentId);
+      setRepliesByParent((prev) => ({ ...prev, [parentId]: res }));
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to get replies";
+      setError(message);
+    }
+  };
   const fetchComments = async () => {
     setIsLoading(true);
     try {
@@ -64,23 +78,59 @@ export function useComments() {
     parentId: string,
     comment: CreateComment,
     file?: File,
-  ) => {
+  ): Promise<boolean> => {
     setIsLoading(true);
+    setError(null);
     try {
       const res = await createReply(parentId, comment);
-      setReplies((prev) => [res as Comment, ...prev]);
+      if (file && res?.id) {
+        await uploadAttachment(res.id, file);
+      }
+      await fetchReplies(parentId);
       await fetchComments();
+      return true;
     } catch (error) {
-      setError((error as { message: string }).message);
+      const message =
+        error instanceof Error ? error.message : "Failed to create reply";
+      setError(message);
+      return false;
     } finally {
       setIsLoading(false);
     }
   };
 
   const changeSort = (field: "username" | "email" | "createdAt") => {
-    setSortBy(field);
-    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    if (sortBy === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder("desc");
+    }
     setPage(1);
+  };
+
+  const removeComment = async (id: string) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await deleteComment(id);
+      setComments((prev) => prev.filter((c) => c.id !== id));
+      setRepliesByParent((prev) => {
+        const next = { ...prev };
+        for (const key of Object.keys(next)) {
+          next[key] = next[key].filter((reply) => reply.id !== id);
+        }
+        return next;
+      });
+      return true;
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to delete comment";
+      setError(message);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const changePage = (page: number) => {
@@ -92,7 +142,10 @@ export function useComments() {
   });
 
   useEffect(() => {
-    fetchComments();
+    const fetchCommentsEffect = async () => {
+      await fetchComments();
+    };
+    fetchCommentsEffect();
   }, [page, sortBy, sortOrder]);
 
   return {
@@ -101,11 +154,13 @@ export function useComments() {
     page,
     sortBy,
     sortOrder,
-    replies,
+    repliesByParent,
     isLoading,
     error,
     submitComment,
     submitReply,
+    fetchReplies,
+    removeComment,
     changeSort,
     changePage,
   };
