@@ -68,17 +68,14 @@ docker compose down
 
 Uploaded files are stored in the Docker volume `uploads`.
 
-### Production (VPS)
+### Production
 
-See **[docs/DEPLOY.md](docs/DEPLOY.md)** for full steps.
+| Target | Guide |
+|--------|--------|
+| **Vercel** (frontend) + Render (API + DB) | [docs/VERCEL.md](docs/VERCEL.md) |
+| **VPS / VDS** (full Docker stack) | [docs/DEPLOY.md](docs/DEPLOY.md) |
 
-```bash
-cp .env.deploy.example .env.deploy
-# edit YOUR_SERVER_IP and secrets
-docker compose -f docker-compose.prod.yml --env-file .env.deploy up --build -d
-```
-
-Add to README after deploy: `Live demo: http://YOUR_SERVER_IP:3000`
+After deploy, add to README: `Live demo: https://your-app.vercel.app` or `http://YOUR_SERVER_IP:3000`
 
 ## Quick start (without Docker)
 
